@@ -71,8 +71,8 @@ The library provides a `ClipboardHistory` class with static methods and properti
 
 1. Display all clipboard history items in message boxes:
 
-    ```ahk
-    #requires AutoHotkey v2
+    ```php
+    #Requires AutoHotkey v2
     #Include <ClipboardHistory> ; Or #Include ClipboardHistory.ahk if not using the Lib folder
     
     if (!A_IsCompiled && A_LineFile = A_ScriptFullPath)
@@ -83,7 +83,7 @@ The library provides a `ClipboardHistory` class with static methods and properti
 
 2. Retrieves the third item from your clipboard history and places it into your current clipboard. (This works with any type of content.)  
 
-    ```cpp
+    ```rb
     ClipboardHistory.SetItemAsContent(3)
     ```
     > ![image](https://github.com/user-attachments/assets/010e09d5-56e5-4b73-b33e-f50816ebf4c7)
