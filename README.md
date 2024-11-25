@@ -69,24 +69,24 @@ The library provides a `ClipboardHistory` class with static methods and properti
 
 ### Basic Example
 
-Display all clipboard history items in message boxes:
+1. Display all clipboard history items in message boxes:
 
-```ahk
-#requires AutoHotkey v2
-#Include <ClipboardHistory> ; Or #Include ClipboardHistory.ahk if not using the Lib folder
+    ```ahk
+    #requires AutoHotkey v2
+    #Include <ClipboardHistory> ; Or #Include ClipboardHistory.ahk if not using the Lib folder
+    
+    if (!A_IsCompiled && A_LineFile = A_ScriptFullPath)
+        Loop count := ClipboardHistory.Count
+            if texts := ClipboardHistory.GetText(A_Index)
+                MsgBox(texts, "Clipboard History Item Index: " A_Index " of " count)
+    ```
 
-if (!A_IsCompiled && A_LineFile = A_ScriptFullPath)
-    Loop count := ClipboardHistory.Count
-        if texts := ClipboardHistory.GetText(A_Index)
-            MsgBox(texts, "Clipboard History Item Index: " A_Index " of " count)
-```
+2. Retrieves the third item from your clipboard history and places it into your current clipboard. (This works with any type of content.)  
 
-This example retrieves the third item from your clipboard history and places it into your current clipboard. (This works with any type of content.)  
-
-```cpp
-ClipboardHistory.SetItemAsContent(3)
-```
-> ![image](https://github.com/user-attachments/assets/010e09d5-56e5-4b73-b33e-f50816ebf4c7)
+    ```cpp
+    ClipboardHistory.SetItemAsContent(3)
+    ```
+    > ![image](https://github.com/user-attachments/assets/010e09d5-56e5-4b73-b33e-f50816ebf4c7)
 
 ### Key Properties
 
