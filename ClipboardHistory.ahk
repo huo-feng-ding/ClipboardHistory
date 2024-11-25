@@ -150,10 +150,10 @@ class ClipboardHistory
 		
         status := this.Clipboard.SetHistoryItemAsContent(item)
 		
-        try if ((result := SetHistoryItemAsContentStatus[Number(status) + 1]) = "Success")
-            return true
+        try if ((result := SetHistoryItemAsContentStatus[Number(status) + 1]) != "Success")
+            return (TrayTip(result), false)
 
-        return (TrayTip(result), false)
+        return true
 	}
 }
 
