@@ -157,9 +157,6 @@ class ClipboardHistory
 	}
 }
 
-
-#Include <Dark_Msgbox>
-
 ;; Example
 
 if (!A_IsCompiled && A_LineFile = A_ScriptFullPath)
