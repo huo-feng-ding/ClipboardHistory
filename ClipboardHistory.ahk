@@ -59,7 +59,7 @@ class ClipboardHistory
 	 * @returns {Boolean} `true` on success, `false` on failure.
 	 */
 	static DeleteItem(ItemOrIndex) => this.Clipboard.DeleteItemFromHistory(IsNumber(ItemOrIndex) ?
-		this[ItemOrIndex - 1] : ItemOrIndex)
+		this[ItemOrIndex] : ItemOrIndex)
 
 	/**
 	 * Gets the clipboard history items asynchronously.
