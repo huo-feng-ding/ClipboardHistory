@@ -8,8 +8,8 @@
 
 #requires AutoHotkey v2
 
-#include <winrt.ahk-main\winrt>
-#include <winrt.ahk-main\windows>
+#include winrt.ahk-main\winrt.ahk
+#include winrt.ahk-main\windows.ahk
 
 /** A class for managing Windows Clipboard History with integration to WinRT API. */
 class ClipboardHistory
@@ -46,7 +46,7 @@ class ClipboardHistory
 
 		Loop formats.Size
 			message .= formats.GetAt(A_Index - 1) "|"
-        
+
 		return RTrim(message, "|")
 	}
 
@@ -88,16 +88,16 @@ class ClipboardHistory
 
 		if !content.Contains(this.StandardDataFormats.Html)
 			return (TrayTip("Html Format Not Found."), "")
-		
-        fragment := content.GetHtmlFormatAsync().Await()
-		
-        if !convertToText
+
+		fragment := content.GetHtmlFormatAsync().Await()
+
+		if !convertToText
 			return fragment
-		
-        if !RegExMatch(fragment, 'mS)^SourceURL:(.*)\R\K(?s:.*)', &match)
+
+		if !RegExMatch(fragment, 'mS)^SourceURL:(.*)\R\K(?s:.*)', &match)
 			return (TrayTip("Error parsing HTML fragment."), "")
-		
-        source := match.1
+
+		source := match.1
 		return WinRT('Windows.Data.Html.HtmlUtilities').ConvertToText(match.0)
 	}
 
@@ -118,7 +118,8 @@ class ClipboardHistory
 		content := this[index].Content
 
 		if !content.Contains(this.StandardDataFormats.Text)
-			return (TrayTip("Clipboard Format Not Supported"), "")
+			;return (TrayTip("Clipboard Format Not Supported"), "")
+			return ""
 
 		return content.GetTextAsync().Await()
 	}
@@ -144,22 +145,88 @@ class ClipboardHistory
 			'AccessDenied',
 			'ItemDeleted'
 		]
-        
+
 		if !(item := this[index])
 			return false
-		
-        status := this.Clipboard.SetHistoryItemAsContent(item)
-		
-        try if ((result := SetHistoryItemAsContentStatus[Number(status) + 1]) != "Success")
-            return (TrayTip(result), false)
 
-        return true
+		status := this.Clipboard.SetHistoryItemAsContent(item)
+
+		try if ((result := SetHistoryItemAsContentStatus[Number(status) + 1]) != "Success")
+			return (TrayTip(result), false)
+
+		return true
 	}
 }
 
 ;; Example
 
+/*
 if (!A_IsCompiled && A_LineFile = A_ScriptFullPath)
 	Loop count := ClipboardHistory.Count
 		if texts := ClipboardHistory.GetText(A_Index)
 			MsgBox(texts, "Clipboard History Item Index: " A_Index " of " count)
+*/
+
+pasteText(texts) {
+	;SendText texts
+	;ClipSaved := ClipboardAll()   ; 把整个剪贴板保存到您选择的变量中.
+	; ... 这里临时使用剪贴板, 比如快速粘贴大量文本 ...
+	A_Clipboard := texts
+	SendInput "+{Ins}"
+	;A_Clipboard := ClipSaved   ; 还原剪贴板. 注意这里使用 A_Clipboard(而不是 ClipboardAll).
+	;ClipSaved := ""  ; 在剪贴板含有大量内容时释放内存.
+}
+
+showClibHistory() {
+	; 清空旧的菜单窗口
+	static windowListMenu := ""
+	if (windowListMenu) {
+		windowListMenu.Delete()
+	} else {
+		windowListMenu := Menu()
+		;windowListMenu.SetColor("EEAA99")
+	}
+
+	list := Array()
+	numList := [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]  ; 目前索引符号, 排除了常用固定窗口的字符
+	numIndex := 1
+	maxStrLen := 70
+
+	while count := Min(ClipboardHistory.Count, numList.Length) >= numIndex {
+		texts := ClipboardHistory.GetText(A_Index)
+		if !texts {
+			continue
+		}
+
+		hasText := false
+		Loop list.Length {
+			if (list[A_Index] == texts) {
+				hasText := true
+				break
+			}
+		}
+		if (hasText) {
+			continue
+		}
+
+		list.push(texts)
+		numset := numList[numIndex]
+		numIndex := numIndex + 1
+
+
+		title := SubStr(texts, 1, maxStrLen)
+		title := StrReplace(title, "&", "&&")
+		if StrLen(texts) > maxStrLen {
+			title := title . "..."
+		}
+
+		windowListMenu.Add(numset ":    " title, (ItemName, ItemPos, MyMenu) => pasteText(list[ItemPos]))
+	}
+
+	CoordMode "Menu", "Screen"
+	;MouseGetPos(&xpos, &ypos)
+	windowListMenu.Show()
+}
+$#v:: {
+	showClibHistory()
+}
