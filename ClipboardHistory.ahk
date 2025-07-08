@@ -191,6 +191,12 @@ showClibHistory() {
 	numList := [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]  ; 目前索引符号, 排除了常用固定窗口的字符
 	numIndex := 1
 	maxStrLen := 70
+	
+	if A_IsCompiled {
+		dirPath := A_ScriptDir
+	} else {
+		SplitPath(A_LineFile, &fileName, &dirPath)
+	}
 
 	while count := Min(ClipboardHistory.Count, numList.Length) >= numIndex {
 		texts := ClipboardHistory.GetText(A_Index)
@@ -220,7 +226,8 @@ showClibHistory() {
 			title := title . "..."
 		}
 
-		windowListMenu.Add(numset ":    " title, (ItemName, ItemPos, MyMenu) => pasteText(list[ItemPos]))
+		windowListMenu.Add("&" numset "    " title, (ItemName, ItemPos, MyMenu) => pasteText(list[ItemPos]))
+		windowListMenu.SetIcon("&" numset "    " title, dirPath "\icons\" numset ".ico", 1, 16)
 	}
 
 	CoordMode "Menu", "Screen"
