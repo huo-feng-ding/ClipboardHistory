@@ -187,10 +187,16 @@ showClibHistory() {
 		;windowListMenu.SetColor("EEAA99")
 	}
 
+	; 剪贴板内容列表
 	list := Array()
-	numList := [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]  ; 目前索引符号, 排除了常用固定窗口的字符
+	; 目前索引符号, 排除了常用固定窗口的字符
+	numList := [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]  
+	; 剪贴板有效个数
 	numIndex := 1
+	; 剪贴板列表显示最大长度的字符串
 	maxStrLen := 70
+	; 要显示剪贴板列表的个数
+	clipCount := Min(ClipboardHistory.Count, numList.Length)
 	
 	if A_IsCompiled {
 		dirPath := A_ScriptDir
@@ -198,7 +204,7 @@ showClibHistory() {
 		SplitPath(A_LineFile, &fileName, &dirPath)
 	}
 
-	while count := Min(ClipboardHistory.Count, numList.Length) >= numIndex {
+	while clipCount >= numIndex {
 		texts := ClipboardHistory.GetText(A_Index)
 		if !texts {
 			continue
@@ -219,7 +225,6 @@ showClibHistory() {
 		numset := numList[numIndex]
 		numIndex := numIndex + 1
 
-
 		title := SubStr(texts, 1, maxStrLen)
 		title := StrReplace(title, "&", "&&")
 		if StrLen(texts) > maxStrLen {
@@ -230,7 +235,7 @@ showClibHistory() {
 		windowListMenu.SetIcon("&" numset "    " title, dirPath "\icons\" numset ".ico", 1, 16)
 	}
 
-	CoordMode "Menu", "Screen"
+	;CoordMode "Menu", "Screen"
 	;MouseGetPos(&xpos, &ypos)
 	windowListMenu.Show()
 }
