@@ -196,7 +196,7 @@ showClibHistory() {
 	; 剪贴板列表显示最大长度的字符串
 	maxStrLen := 70
 	; 要显示剪贴板列表的个数
-	clipCount := Min(ClipboardHistory.Count, numList.Length)
+	clipCount := ClipboardHistory.Count
 	
 	if A_IsCompiled {
 		dirPath := A_ScriptDir
@@ -204,7 +204,7 @@ showClibHistory() {
 		SplitPath(A_LineFile, &fileName, &dirPath)
 	}
 
-	while clipCount >= numIndex {
+	Loop clipCount {
 		texts := ClipboardHistory.GetText(A_Index)
 		if !texts {
 			continue
@@ -223,7 +223,6 @@ showClibHistory() {
 
 		list.push(texts)
 		numset := numList[numIndex]
-		numIndex := numIndex + 1
 
 		title := SubStr(texts, 1, maxStrLen)
 		title := StrReplace(title, "&", "&&")
@@ -233,6 +232,11 @@ showClibHistory() {
 
 		windowListMenu.Add("&" numset "    " title, (ItemName, ItemPos, MyMenu) => pasteText(list[ItemPos]))
 		windowListMenu.SetIcon("&" numset "    " title, dirPath "\icons\" numset ".ico", 1, 16)
+
+		if (numIndex == numList.Length) {
+			break
+		}
+		numIndex := numIndex + 1
 	}
 
 	;CoordMode "Menu", "Screen"
